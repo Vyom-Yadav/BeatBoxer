@@ -1,0 +1,9 @@
+#Ignore every file
+*
+# Don't ignore directories, so we can recurse into them
+!*/
+#Except these file
+!*.java
+!*.gitignore
+/bin/
+.idea
