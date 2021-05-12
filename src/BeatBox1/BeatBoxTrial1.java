@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.ArrayList;
 
 public class BeatBoxTrial1 {
@@ -16,6 +17,7 @@ public class BeatBoxTrial1 {
     JFrame theFrame;
     Font newFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
     Dimension dim = new Dimension(150, 100);
+    boolean[] checkboxState;
 
     String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustics Snare", "Crash Cymbal",
             "Hand Clap", "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap",
@@ -45,38 +47,58 @@ public class BeatBoxTrial1 {
         start.addActionListener(new MyStartListener());
         start.addActionListener(pattern);
         start.setPreferredSize(dim);
+        start.getPreferredSize();
         buttonBox.add(start);
         start.setFont(newFont);
 
         JButton stop = new JButton("Stop");
         stop.addActionListener(new MyStopListener());
         stop.setPreferredSize(dim);
+        stop.getPreferredSize();
         buttonBox.add(stop);
         stop.setFont(newFont);
 
         JButton upTempo = new JButton("Tempo Up");
         upTempo.addActionListener(new MyUpTempoListener());
         upTempo.setPreferredSize(dim);
+        upTempo.getPreferredSize();
         buttonBox.add(upTempo);
         upTempo.setFont(newFont);
 
         JButton downTempo = new JButton("Tempo Down");
         downTempo.addActionListener(new MyDownTempoListener());
         downTempo.setPreferredSize(dim);
+        downTempo.getPreferredSize();
         buttonBox.add(downTempo);
         downTempo.setFont(newFont);
 
         JButton selectAll = new JButton("Select All");
         selectAll.addActionListener(new MySelectAllListener());
         selectAll.setPreferredSize(dim);
+        selectAll.getPreferredSize();
         buttonBox.add(selectAll);
         selectAll.setFont(newFont);
 
         JButton deSelectAll = new JButton("Unselect All");
         deSelectAll.addActionListener(new MyDeSelectAllListener());
         deSelectAll.setPreferredSize(dim);
+        deSelectAll.getPreferredSize();
         buttonBox.add(deSelectAll);
         deSelectAll.setFont(newFont);
+
+        JButton open = new JButton("Open/de-serialize");
+        open.addActionListener(new openListener());
+        open.setPreferredSize(dim);
+        open.getPreferredSize();
+        buttonBox.add(open);
+        open.setFont(newFont);
+
+        JButton save = new JButton("Save/serialize");
+        save.addActionListener(new saveListener());
+        save.setPreferredSize(dim);
+        save.getPreferredSize();
+        buttonBox.add(save);
+        save.setFont(newFont);
 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
         for (int i = 0; i < 16; i++) {
@@ -93,7 +115,7 @@ public class BeatBoxTrial1 {
         grid.setVgap(1);
         grid.setHgap(2);
         mainPanel = new JPanel(grid);
-        pattern.setPreferredSize(new Dimension(1000,160));
+        pattern.setPreferredSize(new Dimension(1000, 160));
         pattern.getPreferredSize();
         background.add(BorderLayout.CENTER, mainPanel);
         background.add(BorderLayout.SOUTH, pattern);
@@ -196,7 +218,7 @@ public class BeatBoxTrial1 {
     class MyStopListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
             sequencer.stop();
-            for (int i=0; i<16; i++) {
+            for (int i = 0; i < 16; i++) {
                 noOfBeats[i] = 0;
             }
             clearPattern = true;
@@ -234,12 +256,63 @@ public class BeatBoxTrial1 {
         }
     }
 
+    class saveListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            checkboxState = new boolean[256];
+            for (int i = 0; i < 256; i++) {
+                checkboxState[i] = checkBoxList.get(i).isSelected();
+            }
+            JFileChooser fileSave = new JFileChooser();
+            fileSave.showSaveDialog(theFrame);
+            saveFile(fileSave.getSelectedFile());
+        }
+    }
+
+    class openListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            JFileChooser fileOpen = new JFileChooser();
+            fileOpen.showOpenDialog(theFrame);
+            openFile(fileOpen.getSelectedFile());
+            for (int i=0; i<256; i++) {
+                checkBoxList.get(i).setSelected(checkboxState[i]);
+            }
+            sequencer.stop();
+            buildTrackAndStart();
+        }
+    }
+
+    private void saveFile(File file) {
+        try {
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
+            outputStream.writeObject(checkboxState);
+            outputStream.close();
+
+        } catch (IOException ex) {
+            System.out.println("Couldn't save file");
+            ex.printStackTrace();
+        }
+    }
+
+    private void openFile(File file) {
+        try {
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file));
+            checkboxState = (boolean[]) inputStream.readObject();
+        } catch(IOException | ClassNotFoundException ex) {
+            System.out.println("Couldn't open file");
+            ex.printStackTrace();
+        }
+    }
+
     class SoundPattern extends JPanel implements ActionListener {
 
         @Override
         public void paintComponent(Graphics g) {
             if (clearPattern) {
-                g.clearRect(0,0, this.getWidth(), this.getHeight());
+                g.clearRect(0, 0, this.getWidth(), this.getHeight());
             } else {
 
                 int width = theFrame.getWidth() / 16;
@@ -252,7 +325,7 @@ public class BeatBoxTrial1 {
 
                     Color randomColor = new Color(red, blue, green);
                     g.setColor(randomColor);
-                    g.fillRect(i * width, (16-noOfBeats[i])*10, width, noOfBeats[i] * 10);
+                    g.fillRect(i * width, (16 - noOfBeats[i]) * 10, width, noOfBeats[i] * 10);
                 }
             }
         }
