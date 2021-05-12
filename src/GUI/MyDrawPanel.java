@@ -63,8 +63,13 @@ public class MyDrawPanel extends JPanel {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         MyDrawPanel a = new MyDrawPanel();
-        BorderLayout sd = new BorderLayout();
+        JButton test = new JButton("test");
+        JButton test1 = new JButton("test1");
+        JButton test2 = new JButton("test2");
         frame.getContentPane().add(BorderLayout.SOUTH, a);
+        frame.getContentPane().add(BorderLayout.NORTH, test);
+        frame.getContentPane().add(BorderLayout.WEST, test1);
+        frame.getContentPane().add(BorderLayout.EAST, test2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.getPreferredSize();

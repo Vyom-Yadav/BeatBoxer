@@ -93,6 +93,8 @@ public class BeatBoxTrial1 {
         grid.setVgap(1);
         grid.setHgap(2);
         mainPanel = new JPanel(grid);
+        pattern.setPreferredSize(new Dimension(1000,160));
+        pattern.getPreferredSize();
         background.add(BorderLayout.CENTER, mainPanel);
         background.add(BorderLayout.SOUTH, pattern);
 
@@ -250,7 +252,7 @@ public class BeatBoxTrial1 {
 
                     Color randomColor = new Color(red, blue, green);
                     g.setColor(randomColor);
-                    g.fillRect(i * width, 0, width, noOfBeats[i] * 10);
+                    g.fillRect(i * width, (16-noOfBeats[i])*10, width, noOfBeats[i] * 10);
                 }
             }
         }
