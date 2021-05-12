@@ -14,11 +14,14 @@ public class BeatBoxTrial1 {
     Sequence sequence;
     Track track;
     JFrame theFrame;
+    Font newFont = new Font(Font.MONOSPACED,Font.BOLD, 15);
+    Dimension dim = new Dimension(150, 100);
 
     String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustics Snare", "Crash Cymbal", "Hand Clap", "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap",
             "Low-mis Tom", "High Agogo", "Open High Conga"};
 
     int[] instruments = {35, 42, 46, 38, 49, 39, 50, 60, 70, 72, 64, 56, 58, 47, 67, 63};
+    int[] noOfBeats = new int[16];
 
     public static void main(String[] args) {
         new BeatBoxTrial1().BuildGUI();
@@ -36,32 +39,47 @@ public class BeatBoxTrial1 {
 
         JButton start = new JButton("Start");
         start.addActionListener(new MyStartListener());
+        start.setPreferredSize(dim);
         buttonBox.add(start);
+        start.setFont(newFont);
 
         JButton stop = new JButton("Stop");
         stop.addActionListener(new MyStopListener());
+        stop.setPreferredSize(dim);
         buttonBox.add(stop);
+        stop.setFont(newFont);
 
         JButton upTempo = new JButton("Tempo Up");
         upTempo.addActionListener(new MyUpTempoListener());
+        upTempo.setPreferredSize(dim);
         buttonBox.add(upTempo);
+        upTempo.setFont(newFont);
 
         JButton downTempo = new JButton("Tempo Down");
         downTempo.addActionListener(new MyDownTempoListener());
+        downTempo.setPreferredSize(dim);
         buttonBox.add(downTempo);
+        downTempo.setFont(newFont);
 
         JButton selectAll = new JButton("Select All");
         selectAll.addActionListener(new MySelectAllListener());
+        selectAll.setPreferredSize(dim);
         buttonBox.add(selectAll);
+        selectAll.setFont(newFont);
 
         JButton deSelectAll = new JButton("Unselect All");
         deSelectAll.addActionListener(new MyDeSelectAllListener());
+        deSelectAll.setPreferredSize(dim);
         buttonBox.add(deSelectAll);
+        deSelectAll.setFont(newFont);
 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
         for (int i = 0; i < 16; i++) {
-            nameBox.add(new Label(instrumentNames[i]));
+            Label a = new Label(instrumentNames[i]);
+            a.setFont(newFont);
+            nameBox.add(a);
         }
+        SoundPattern pattern = new SoundPattern();
 
         background.add(BorderLayout.EAST, buttonBox);
         background.add(BorderLayout.WEST, nameBox);
@@ -117,6 +135,7 @@ public class BeatBoxTrial1 {
                 JCheckBox jc = (JCheckBox) checkBoxList.get(j + (16 * i));
                 if (jc.isSelected()) {
                     trackList[j] = key;
+                    noOfBeats[i]++;
                 } else {
                     trackList[j] = 0;
                 }
@@ -199,6 +218,25 @@ public class BeatBoxTrial1 {
             for (int i=0; i<256; i++) {
                 checkBoxList.get(i).setSelected(false);
             }
+        }
+    }
+
+    class SoundPattern extends JPanel implements ActionListener {
+        boolean msg;
+
+        @Override
+        public void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setColor(Color.GREEN);
+            for (int i=0; i<16; i++) {
+              // g2d.fillRect();
+            }
+        }
+
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
         }
     }
 

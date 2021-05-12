@@ -31,33 +31,46 @@ public class MyDrawPanel extends JPanel {
     }
  */
 
+//    @Override
+//    public void paintComponent(Graphics g) {
+//        Graphics2D g2d = (Graphics2D) g;
+//
+//        int red = (int) (Math.random() * 255);
+//        int blue = (int) (Math.random() * 255);
+//        int green = (int) (Math.random() * 255);
+//
+//        Color startColor = new Color(red,blue,green);
+//        red = (int) (Math.random() * 255);
+//        blue = (int) (Math.random() * 255);
+//        green = (int) (Math.random() * 255);
+//
+//        Color endColor = new Color(red,blue,green);
+//
+//        GradientPaint gradient = new GradientPaint(70,70,startColor,180,180,endColor);
+//        g2d.setPaint(gradient);
+//        g2d.fillOval(70,70,150,150);
+//    }
+
     @Override
     public void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-
-        int red = (int) (Math.random() * 255);
-        int blue = (int) (Math.random() * 255);
-        int green = (int) (Math.random() * 255);
-
-        Color startColor = new Color(red,blue,green);
-        red = (int) (Math.random() * 255);
-        blue = (int) (Math.random() * 255);
-        green = (int) (Math.random() * 255);
-
-        Color endColor = new Color(red,blue,green);
-
-        GradientPaint gradient = new GradientPaint(70,70,startColor,180,180,endColor);
-        g2d.setPaint(gradient);
-        g2d.fillOval(70,70,150,150);
+        g.setColor(Color.GREEN);
+        g.fillRect(0,0,200,400);
     }
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         MyDrawPanel a = new MyDrawPanel();
-        frame.getContentPane().add(a);
+        BorderLayout sd = new BorderLayout();
+        frame.getContentPane().add(BorderLayout.SOUTH, a);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000,1000);
+        frame.pack();
+        frame.getPreferredSize();
         frame.setVisible(true);
+    }
+    public Dimension getPreferredSize() {
+        System.out.println("getting pref size");
+        return new Dimension(200, 200);
     }
 
 }
