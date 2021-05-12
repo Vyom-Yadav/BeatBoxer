@@ -17,7 +17,8 @@ public class BeatBoxTrial1 {
     Font newFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
     Dimension dim = new Dimension(150, 100);
 
-    String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustics Snare", "Crash Cymbal", "Hand Clap", "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap",
+    String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustics Snare", "Crash Cymbal",
+            "Hand Clap", "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap",
             "Low-mis Tom", "High Agogo", "Open High Conga"};
 
     int[] instruments = {35, 42, 46, 38, 49, 39, 50, 60, 70, 72, 64, 56, 58, 47, 67, 63};
@@ -236,10 +237,9 @@ public class BeatBoxTrial1 {
         @Override
         public void paintComponent(Graphics g) {
             if (clearPattern) {
-                g.setColor(Color.LIGHT_GRAY);
-                g.fillRect(0, 0, this.getWidth(), this.getHeight());
+                g.clearRect(0,0, this.getWidth(), this.getHeight());
             } else {
-                Graphics2D g2d = (Graphics2D) g;
+
                 int width = theFrame.getWidth() / 16;
                 int red, blue, green;
 
@@ -249,8 +249,8 @@ public class BeatBoxTrial1 {
                     green = (int) (Math.random() * 255);
 
                     Color randomColor = new Color(red, blue, green);
-                    g2d.setColor(randomColor);
-                    g2d.fillRect(i * width, 0, width, noOfBeats[i] * 10);
+                    g.setColor(randomColor);
+                    g.fillRect(i * width, 0, width, noOfBeats[i] * 10);
                 }
             }
         }
