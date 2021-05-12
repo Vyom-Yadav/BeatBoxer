@@ -54,7 +54,9 @@ public class MyDrawPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         g.setColor(Color.GREEN);
-        g.fillRect(0,0,200,400);
+        g.fillRect(0,0,200,500);
+        g.setColor(Color.BLACK);
+        g.fillRect(200,0,200,300);
     }
 
 
@@ -70,7 +72,7 @@ public class MyDrawPanel extends JPanel {
     }
     public Dimension getPreferredSize() {
         System.out.println("getting pref size");
-        return new Dimension(200, 200);
+        return new Dimension(500, 500);
     }
 
 }

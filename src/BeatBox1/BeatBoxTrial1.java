@@ -14,7 +14,7 @@ public class BeatBoxTrial1 {
     Sequence sequence;
     Track track;
     JFrame theFrame;
-    Font newFont = new Font(Font.MONOSPACED,Font.BOLD, 15);
+    Font newFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
     Dimension dim = new Dimension(150, 100);
 
     String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustics Snare", "Crash Cymbal", "Hand Clap", "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap",
@@ -22,6 +22,8 @@ public class BeatBoxTrial1 {
 
     int[] instruments = {35, 42, 46, 38, 49, 39, 50, 60, 70, 72, 64, 56, 58, 47, 67, 63};
     int[] noOfBeats = new int[16];
+    SoundPattern pattern;
+    boolean clearPattern;
 
     public static void main(String[] args) {
         new BeatBoxTrial1().BuildGUI();
@@ -32,6 +34,7 @@ public class BeatBoxTrial1 {
         theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         BorderLayout layout = new BorderLayout();
         JPanel background = new JPanel(layout);
+        pattern = new SoundPattern();
         background.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         checkBoxList = new ArrayList<JCheckBox>();
@@ -39,6 +42,7 @@ public class BeatBoxTrial1 {
 
         JButton start = new JButton("Start");
         start.addActionListener(new MyStartListener());
+        start.addActionListener(pattern);
         start.setPreferredSize(dim);
         buttonBox.add(start);
         start.setFont(newFont);
@@ -79,8 +83,6 @@ public class BeatBoxTrial1 {
             a.setFont(newFont);
             nameBox.add(a);
         }
-        SoundPattern pattern = new SoundPattern();
-
         background.add(BorderLayout.EAST, buttonBox);
         background.add(BorderLayout.WEST, nameBox);
 
@@ -91,6 +93,7 @@ public class BeatBoxTrial1 {
         grid.setHgap(2);
         mainPanel = new JPanel(grid);
         background.add(BorderLayout.CENTER, mainPanel);
+        background.add(BorderLayout.SOUTH, pattern);
 
         for (int i = 0; i < 256; i++) {
             JCheckBox c = new JCheckBox();
@@ -101,7 +104,8 @@ public class BeatBoxTrial1 {
 
         setUpMidi();
 
-        theFrame.setBounds(50, 50, 300, 300);
+        theFrame.setPreferredSize(new Dimension(1000, 1000));
+        theFrame.getPreferredSize();
         theFrame.pack();
         theFrame.setVisible(true);
 
@@ -182,12 +186,18 @@ public class BeatBoxTrial1 {
     class MyStartListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
             buildTrackAndStart();
+            clearPattern = false;
         }
     }
 
     class MyStopListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
             sequencer.stop();
+            for (int i=0; i<16; i++) {
+                noOfBeats[i] = 0;
+            }
+            clearPattern = true;
+            pattern.repaint();
         }
     }
 
@@ -207,7 +217,7 @@ public class BeatBoxTrial1 {
 
     class MySelectAllListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
-            for(int i=0; i<256; i++) {
+            for (int i = 0; i < 256; i++) {
                 checkBoxList.get(i).setSelected(true);
             }
         }
@@ -215,28 +225,40 @@ public class BeatBoxTrial1 {
 
     class MyDeSelectAllListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
-            for (int i=0; i<256; i++) {
+            for (int i = 0; i < 256; i++) {
                 checkBoxList.get(i).setSelected(false);
             }
         }
     }
 
     class SoundPattern extends JPanel implements ActionListener {
-        boolean msg;
 
         @Override
         public void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(Color.GREEN);
-            for (int i=0; i<16; i++) {
-              // g2d.fillRect();
+            if (clearPattern) {
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(0, 0, this.getWidth(), this.getHeight());
+            } else {
+                Graphics2D g2d = (Graphics2D) g;
+                int width = theFrame.getWidth() / 16;
+                int red, blue, green;
+
+                for (int i = 0; i < 16; i++) {
+                    red = (int) (Math.random() * 255);
+                    blue = (int) (Math.random() * 255);
+                    green = (int) (Math.random() * 255);
+
+                    Color randomColor = new Color(red, blue, green);
+                    g2d.setColor(randomColor);
+                    g2d.fillRect(i * width, 0, width, noOfBeats[i] * 10);
+                }
             }
         }
 
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            repaint();
         }
     }
 
