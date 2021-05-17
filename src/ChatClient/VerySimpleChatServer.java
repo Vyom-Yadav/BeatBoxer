@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class VerySimpleChatServer {
-    ArrayList clientOutputStream;
+    ArrayList<PrintWriter> clientOutputStream;
 
     class ClientHandler implements Runnable {
         BufferedReader reader;
@@ -47,10 +47,10 @@ public class VerySimpleChatServer {
     }
 
     public void go() {
-        clientOutputStream = new ArrayList();
+        clientOutputStream = new ArrayList<PrintWriter>();
         try {
             ServerSocket serverSock = new ServerSocket(5000);
-            while(true) {
+            while (true) {
                Socket clientSocket = serverSock.accept();
                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                clientOutputStream.add(writer);
@@ -65,10 +65,10 @@ public class VerySimpleChatServer {
     }
 
     public void tellEveryone(String message) {
-        Iterator it = clientOutputStream.iterator();
+        Iterator<PrintWriter> it = clientOutputStream.iterator();
         while (it.hasNext()) {
             try {
-                PrintWriter writer = (PrintWriter) it.next();
+                PrintWriter writer = (PrintWriter) it.next(); // The first element.
                 writer.println(message);
                 writer.flush();
             } catch (Exception ex) {
