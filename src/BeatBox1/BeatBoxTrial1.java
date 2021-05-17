@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 public class BeatBoxTrial1 {
@@ -42,7 +43,7 @@ public class BeatBoxTrial1 {
     boolean clearPattern;
 
     public static void main(String[] args) {
-        new BeatBoxTrial1().BuildGUI();
+        new BeatBoxTrial1().startUp(args[0]);
     }
 
     public static MidiEvent makeEvent(int comd, int chan, int one, int two, int tick) {
@@ -61,7 +62,7 @@ public class BeatBoxTrial1 {
         userName = name;
 
         try {
-            Socket sock = new Socket("192.168.1.9", 4241);
+            Socket sock = new Socket("192.168.43.63", 4241);
             out = new ObjectOutputStream(sock.getOutputStream());
             in = new ObjectInputStream(sock.getInputStream());
             Thread remote = new Thread(new RemoteReader());
@@ -244,13 +245,14 @@ public class BeatBoxTrial1 {
         }
     }
 
-    public void makeTracks(int[] list) {
+    public void makeTracks(ArrayList list) {
+        Iterator it = list.iterator();
         for (int i = 0; i < 16; i++) {
-            int key = list[i];
-
-            if (key != 0) {
-                track.add(makeEvent(144, 9, key, 100, i));
-                track.add(makeEvent(128, 9, key, 100, i + 1));
+            Integer num = (Integer) it.next();
+            if (num != null) {
+                int numKey = num.intValue();
+                track.add(makeEvent(144, 9, numKey, 100, i));
+                track.add(makeEvent(128, 9, numKey, 100, i + 1));
             }
         }
     }
@@ -274,6 +276,17 @@ public class BeatBoxTrial1 {
         } catch (IOException | ClassNotFoundException ex) {
             System.out.println("Couldn't open file");
             ex.printStackTrace();
+        }
+    }
+
+    public void changeSequence(boolean[] checkboxState) {
+        for (int i = 0; i < 256; i++) {
+            JCheckBox check = (JCheckBox) checkBoxList.get(i);
+            if (checkboxState[i]) {
+                check.setSelected(true);
+            } else {
+                check.setSelected(false);
+            }
         }
     }
 
@@ -389,6 +402,16 @@ public class BeatBoxTrial1 {
                     sequencer.stop();
                     buildTrackAndStart();
                 }
+            }
+        }
+    }
+
+    class MyPlayMineListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if (mySequence != null) {
+                sequence = mySequence; // restore to my original.
             }
         }
     }
