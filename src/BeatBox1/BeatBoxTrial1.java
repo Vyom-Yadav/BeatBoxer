@@ -22,7 +22,7 @@ public class BeatBoxTrial1 {
     Sequence mySequence = null;
     Track track;
     JFrame theFrame;
-    JList incomingList;
+    JList<String> incomingList;
     JTextField userMessage;
     int nextNum;
     Font newFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
@@ -43,7 +43,7 @@ public class BeatBoxTrial1 {
     boolean clearPattern;
 
     public static void main(String[] args) {
-        new BeatBoxTrial1().startUp(args[0]);
+        new BeatBoxTrial1().startUp("V");
     }
 
     public static MidiEvent makeEvent(int comd, int chan, int one, int two, int tick) {
@@ -62,15 +62,17 @@ public class BeatBoxTrial1 {
         userName = name;
 
         try {
-            Socket sock = new Socket("192.168.43.63", 4241);
+            Socket sock = new Socket("192.168.1.9", 4241);
             out = new ObjectOutputStream(sock.getOutputStream());
             in = new ObjectInputStream(sock.getInputStream());
             Thread remote = new Thread(new RemoteReader());
+            remote.setName("Additional Thread");
             remote.start();
         } catch (Exception ex) {
             System.out.println("Couldn't connect, play on your own");
             ex.printStackTrace();
         }
+        System.out.println(Thread.currentThread().getName());
         setUpMidi();
         BuildGUI();
     }
@@ -153,7 +155,7 @@ public class BeatBoxTrial1 {
         userMessage = new JTextField();
         buttonBox.add(userMessage);
 
-        incomingList = new JList();
+        incomingList = new JList<>();
         incomingList.addListSelectionListener(new MyListSelectionListener());
         incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane theList = new JScrollPane(incomingList);
@@ -187,8 +189,6 @@ public class BeatBoxTrial1 {
             mainPanel.add(c);
         }
 
-        setUpMidi();
-
         theFrame.setPreferredSize(new Dimension(1000, 1000));
         theFrame.getPreferredSize();
         theFrame.pack();
@@ -216,7 +216,7 @@ public class BeatBoxTrial1 {
         track = sequence.createTrack();
 
         for (int i = 0; i < 16; i++) {
-            trackList = new ArrayList<Integer>();
+            trackList = new ArrayList<>();
 
             int key = instruments[i];
 
@@ -245,14 +245,16 @@ public class BeatBoxTrial1 {
         }
     }
 
-    public void makeTracks(ArrayList list) {
-        Iterator it = list.iterator();
+    public void makeTracks(ArrayList<Integer> list) {
+        Iterator<Integer> it = list.iterator();
         for (int i = 0; i < 16; i++) {
-            Integer num = (Integer) it.next();
-            if (num != null) {
-                int numKey = num.intValue();
-                track.add(makeEvent(144, 9, numKey, 100, i));
-                track.add(makeEvent(128, 9, numKey, 100, i + 1));
+            if (it.hasNext()) {
+                Integer num = (Integer) it.next();
+                if (num != null) {
+                    int numKey = num.intValue();
+                    track.add(makeEvent(144, 9, numKey, 100, i));
+                    track.add(makeEvent(128, 9, numKey, 100, i + 1));
+                }
             }
         }
     }
@@ -282,11 +284,7 @@ public class BeatBoxTrial1 {
     public void changeSequence(boolean[] checkboxState) {
         for (int i = 0; i < 256; i++) {
             JCheckBox check = (JCheckBox) checkBoxList.get(i);
-            if (checkboxState[i]) {
-                check.setSelected(true);
-            } else {
-                check.setSelected(false);
-            }
+            check.setSelected(checkboxState[i]);
         }
     }
 
@@ -318,7 +316,7 @@ public class BeatBoxTrial1 {
     class MyDownTempoListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
             float tempoFactor = sequencer.getTempoFactor();
-            sequencer.setTempoFactor((float) (tempoFactor * 97));
+            sequencer.setTempoFactor(tempoFactor * 97);
         }
     }
 
@@ -427,7 +425,7 @@ public class BeatBoxTrial1 {
                 while ((obj = in.readObject()) != null) {
                     System.out.println("Got an object from the server");
                     System.out.println(obj.getClass());
-                    String nameToShow = (String) obj;
+                    nameToShow = (String) obj;
                     checkboxState = (boolean[]) in.readObject();
                     otherSeqsMap.put(nameToShow, checkboxState);
                     listVector.add(nameToShow);

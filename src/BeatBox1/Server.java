@@ -53,7 +53,7 @@ public class Server {
         try {
             ServerSocket serverSock = new ServerSocket(4241);
 
-            while(true) {
+            while (true) {
                 Socket clientSocket = serverSock.accept();
                 ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                 clientOutputStreams.add(out);
@@ -71,10 +71,10 @@ public class Server {
     }
 
     public void tellEveryone(Object one, Object two) {
-        Iterator it = clientOutputStreams.iterator();
+        Iterator<ObjectOutputStream> it = clientOutputStreams.iterator();
         while (it.hasNext()) {
             try {
-                ObjectOutputStream out = (ObjectOutputStream) it.next();
+                ObjectOutputStream out = it.next();
                 out.writeObject(one);
                 out.writeObject(two);
             } catch (Exception ex) {
