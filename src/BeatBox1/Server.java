@@ -31,8 +31,8 @@ public class Server {
 
         @Override
         public void run() {
-            Object o2 = null;
-            Object o1 = null;
+            Object o2;
+            Object o1;
 
             try {
                 while((o1 = in.readObject()) != null) {
@@ -58,8 +58,8 @@ public class Server {
                 ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
                 clientOutputStreams.add(out);
 
-                Thread t = new Thread(new clientHandler(clientSocket));
-                t.start();
+                Thread readingThread = new Thread(new clientHandler(clientSocket));
+                readingThread.start();
 
                 System.out.println("Got a connection");
             }

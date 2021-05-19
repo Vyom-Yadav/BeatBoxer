@@ -85,7 +85,7 @@ public class BeatBoxTrial1 {
         pattern = new SoundPattern();
         background.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        checkBoxList = new ArrayList<JCheckBox>();
+        checkBoxList = new ArrayList<>();
         Box buttonBox = new Box(BoxLayout.Y_AXIS);
 
         JButton start = new JButton("Start");
@@ -210,7 +210,7 @@ public class BeatBoxTrial1 {
     }
 
     public void buildTrackAndStart() {
-        ArrayList<Integer> trackList = null;
+        ArrayList<Integer> trackList;
 
         sequence.deleteTrack(track);
         track = sequence.createTrack();
@@ -221,7 +221,7 @@ public class BeatBoxTrial1 {
             int key = instruments[i];
 
             for (int j = 0; j < 16; j++) {
-                JCheckBox jc = (JCheckBox) checkBoxList.get(j + (16 * i));
+                JCheckBox jc = checkBoxList.get(j + (16 * i));
                 if (jc.isSelected()) {
                     trackList.add(key);
                     noOfBeats[i]++;
@@ -248,10 +248,10 @@ public class BeatBoxTrial1 {
     public void makeTracks(ArrayList<Integer> list) {
         Iterator<Integer> it = list.iterator();
         for (int i = 0; i < 16; i++) {
-            if (it.hasNext()) {
-                Integer num = (Integer) it.next();
+            if (it.hasNext()) { // As we add null also.
+                Integer num = it.next();
                 if (num != null) {
-                    int numKey = num.intValue();
+                    int numKey = num;
                     track.add(makeEvent(144, 9, numKey, 100, i));
                     track.add(makeEvent(128, 9, numKey, 100, i + 1));
                 }
@@ -283,7 +283,7 @@ public class BeatBoxTrial1 {
 
     public void changeSequence(boolean[] checkboxState) {
         for (int i = 0; i < 256; i++) {
-            JCheckBox check = (JCheckBox) checkBoxList.get(i);
+            JCheckBox check = checkBoxList.get(i);
             check.setSelected(checkboxState[i]);
         }
     }
@@ -371,14 +371,15 @@ public class BeatBoxTrial1 {
         public void actionPerformed(ActionEvent e) {
             boolean[] checkboxState = new boolean[256];
             for (int i = 0; i < 256; i++) {
-                JCheckBox check = (JCheckBox) checkBoxList.get(i);
+                JCheckBox check = checkBoxList.get(i);
                 if (check.isSelected()) {
                     checkboxState[i] = true;
                 }
             }
-            String messageToSend = null;
+            String messageToSend;
             try {
-                out.writeObject(userName + nextNum++ + ": " + userMessage.getText());
+                messageToSend = userName + nextNum++ + ": " + userMessage.getText();
+                out.writeObject(messageToSend);
                 out.writeObject(checkboxState);
             } catch (Exception ex) {
                 System.out.println("Sorry dude. Could not send it to server");
@@ -392,10 +393,10 @@ public class BeatBoxTrial1 {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             if (!e.getValueIsAdjusting()) {
-                String selected = (String) incomingList.getSelectedValue();
+                String selected = incomingList.getSelectedValue();
                 if (selected != null) {
                     // now go to map and change the sequence.
-                    boolean[] selectedState = (boolean[]) otherSeqsMap.get(selected);
+                    boolean[] selectedState = otherSeqsMap.get(selected);
                     changeSequence(selectedState);
                     sequencer.stop();
                     buildTrackAndStart();
