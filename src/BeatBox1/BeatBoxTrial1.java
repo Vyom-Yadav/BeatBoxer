@@ -77,6 +77,32 @@ public class BeatBoxTrial1 {
         BuildGUI();
     }
 
+    class RemoteReader implements Runnable {
+        boolean[] checkboxState = null;
+        String nameToShow = null;
+        Object obj = null;
+
+        @Override
+        public void run() {
+            try {
+                System.out.println(Thread.currentThread().getName());
+                while ((obj = in.readObject()) != null) {
+                    System.out.println("Got an object from the server");
+                    System.out.println(obj.getClass());
+                    nameToShow = (String) obj;
+                    checkboxState = (boolean[]) in.readObject();
+                    otherSeqsMap.put(nameToShow, checkboxState);
+                    listVector.add(nameToShow);
+                    incomingList.setListData(listVector);
+
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName());
+        }
+    }
+
     public void BuildGUI() {
         theFrame = new JFrame("Cyber Beat Box");
         theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -411,30 +437,6 @@ public class BeatBoxTrial1 {
         public void actionPerformed(ActionEvent actionEvent) {
             if (mySequence != null) {
                 sequence = mySequence; // restore to my original.
-            }
-        }
-    }
-
-    class RemoteReader implements Runnable {
-        boolean[] checkboxState = null;
-        String nameToShow = null;
-        Object obj = null;
-
-        @Override
-        public void run() {
-            try {
-                while ((obj = in.readObject()) != null) {
-                    System.out.println("Got an object from the server");
-                    System.out.println(obj.getClass());
-                    nameToShow = (String) obj;
-                    checkboxState = (boolean[]) in.readObject();
-                    otherSeqsMap.put(nameToShow, checkboxState);
-                    listVector.add(nameToShow);
-                    incomingList.setListData(listVector);
-
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
             }
         }
     }
