@@ -11,15 +11,17 @@ public class Server {
     ObjectOutputStream out_s;
     String message_s;
 
-    public void go() throws IOException {
+    public void go() {
         try {
-            ServerSocket ser_Socket = new ServerSocket(4558);
-            Socket clientSocket = ser_Socket.accept();
-            out_s = new ObjectOutputStream(clientSocket.getOutputStream());
+            while (true) {
+                ServerSocket ser_Socket = new ServerSocket(4558);
+                Socket clientSocket = ser_Socket.accept();
+                out_s = new ObjectOutputStream(clientSocket.getOutputStream());
 
-            Thread additionalThread = new Thread(new clientHandler(clientSocket));
-            additionalThread.start();
-
+                Thread additionalThread = new Thread(new clientHandler(clientSocket));
+                additionalThread.start();
+                System.out.println("Got a connection");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,7 +48,7 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new Server().go();
     }
 
