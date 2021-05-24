@@ -43,7 +43,7 @@ public class BeatBoxTrial1 {
     boolean clearPattern;
 
     public static void main(String[] args) {
-        new BeatBoxTrial1().startUp("V");
+        new BeatBoxTrial1().startUp(args[0]);
     }
 
     public static MidiEvent makeEvent(int comd, int chan, int one, int two, int tick) {
@@ -114,7 +114,6 @@ public class BeatBoxTrial1 {
 
         JButton start = new JButton("Start");
         start.addActionListener(new MyStartListener());
-        start.addActionListener(pattern);
         start.setPreferredSize(dim);
         start.getPreferredSize();
         buttonBox.add(start);
@@ -180,7 +179,7 @@ public class BeatBoxTrial1 {
         buttonBox.add(userMessage);
 
         incomingList = new JList<>();
-        incomingList.addListSelectionListener(pattern);
+        incomingList.addListSelectionListener(new incomingListSelectionListener());
         incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane theList = new JScrollPane(incomingList);
         buttonBox.add(theList);
@@ -263,6 +262,7 @@ public class BeatBoxTrial1 {
                 sequencer.setLoopCount(sequencer.LOOP_CONTINUOUSLY);
                 sequencer.start();
                 sequencer.setTempoInBPM(120);
+                pattern.repaint();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -389,6 +389,24 @@ public class BeatBoxTrial1 {
         }
     }
 
+    class incomingListSelectionListener implements ListSelectionListener {
+
+        @Override
+        public void valueChanged(ListSelectionEvent listSelectionEvent) {
+            if (!listSelectionEvent.getValueIsAdjusting()) {
+                String selected = incomingList.getSelectedValue();
+                if (selected != null) {
+                    // now go to map and change the sequence.
+                    boolean[] selectedState = otherSeqsMap.get(selected);
+                    changeSequence(selectedState);
+                    sequencer.stop();
+                    clearPattern = false;
+                    buildTrackAndStart();
+                }
+            }
+        }
+    }
+
     class MySendItListener implements ActionListener {
 
         @Override
@@ -422,7 +440,7 @@ public class BeatBoxTrial1 {
         }
     }
 
-    class SoundPattern extends JPanel implements ActionListener, ListSelectionListener {
+    class SoundPattern extends JPanel {
 
         @Override
         public void paintComponent(Graphics g) {
@@ -441,27 +459,6 @@ public class BeatBoxTrial1 {
                     Color randomColor = new Color(red, blue, green);
                     g.setColor(randomColor);
                     g.fillRect(i * width, (16 - noOfBeats[i]) * 10, width, noOfBeats[i] * 10);
-                }
-            }
-        }
-
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            repaint();
-        }
-
-        @Override
-        public void valueChanged(ListSelectionEvent listSelectionEvent) {
-            if (!listSelectionEvent.getValueIsAdjusting()) {
-                String selected = incomingList.getSelectedValue();
-                if (selected != null) {
-                    // now go to map and change the sequence.
-                    boolean[] selectedState = otherSeqsMap.get(selected);
-                    changeSequence(selectedState);
-                    sequencer.stop();
-                    buildTrackAndStart();
-                    repaint();
                 }
             }
         }
