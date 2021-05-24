@@ -35,7 +35,7 @@ public class Server {
             Object o1;
 
             try {
-                while((o1 = in.readObject()) != null) {
+                while((o1 = in.readObject()) != null) { // This condition never works.
                     o2 = in.readObject();
                     System.out.println("Read two objects");
                     tellEveryone(o1, o2);

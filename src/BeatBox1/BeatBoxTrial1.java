@@ -62,7 +62,7 @@ public class BeatBoxTrial1 {
         userName = name;
 
         try {
-            Socket sock = new Socket("192.168.1.9", 4241);
+            Socket sock = new Socket("192.168.43.63", 4241);
             out = new ObjectOutputStream(sock.getOutputStream());
             in = new ObjectInputStream(sock.getInputStream());
             Thread remote = new Thread(new RemoteReader());
@@ -85,7 +85,6 @@ public class BeatBoxTrial1 {
         @Override
         public void run() {
             try {
-                System.out.println(Thread.currentThread().getName());
                 while ((obj = in.readObject()) != null) {
                     System.out.println("Got an object from the server");
                     System.out.println(obj.getClass());
@@ -94,12 +93,11 @@ public class BeatBoxTrial1 {
                     otherSeqsMap.put(nameToShow, checkboxState);
                     listVector.add(nameToShow);
                     incomingList.setListData(listVector);
-
+                    System.out.println(Thread.currentThread().getName());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            System.out.println(Thread.currentThread().getName());
         }
     }
 
@@ -182,7 +180,7 @@ public class BeatBoxTrial1 {
         buttonBox.add(userMessage);
 
         incomingList = new JList<>();
-        incomingList.addListSelectionListener(new MyListSelectionListener());
+        incomingList.addListSelectionListener(pattern);
         incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane theList = new JScrollPane(incomingList);
         buttonBox.add(theList);
@@ -414,23 +412,6 @@ public class BeatBoxTrial1 {
         }
     }
 
-    class MyListSelectionListener implements ListSelectionListener {
-
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            if (!e.getValueIsAdjusting()) {
-                String selected = incomingList.getSelectedValue();
-                if (selected != null) {
-                    // now go to map and change the sequence.
-                    boolean[] selectedState = otherSeqsMap.get(selected);
-                    changeSequence(selectedState);
-                    sequencer.stop();
-                    buildTrackAndStart();
-                }
-            }
-        }
-    }
-
     class MyPlayMineListener implements ActionListener {
 
         @Override
@@ -441,7 +422,7 @@ public class BeatBoxTrial1 {
         }
     }
 
-    class SoundPattern extends JPanel implements ActionListener {
+    class SoundPattern extends JPanel implements ActionListener, ListSelectionListener {
 
         @Override
         public void paintComponent(Graphics g) {
@@ -468,6 +449,21 @@ public class BeatBoxTrial1 {
         @Override
         public void actionPerformed(ActionEvent e) {
             repaint();
+        }
+
+        @Override
+        public void valueChanged(ListSelectionEvent listSelectionEvent) {
+            if (!listSelectionEvent.getValueIsAdjusting()) {
+                String selected = incomingList.getSelectedValue();
+                if (selected != null) {
+                    // now go to map and change the sequence.
+                    boolean[] selectedState = otherSeqsMap.get(selected);
+                    changeSequence(selectedState);
+                    sequencer.stop();
+                    buildTrackAndStart();
+                    repaint();
+                }
+            }
         }
     }
 
